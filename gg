@@ -1,0 +1,30 @@
+#!/bin/bash
+
+topl='+-------System Summary---------+'
+dusg='+----------Disk Info-----------+'
+line='--------------------------'
+bott='+------------------------------+'
+
+print_line() {
+  let "val = ${#1} + ${#2}"
+  printf "| \e[1;36m%s\e[m %s \e[1;36m%s\e[m |\n" $1 ${line:$val} $2
+}
+
+disk_usage() {
+  DISK_INFO=`df -h | head -n2 | tail -n1 | awk '{print $2,$3,$4}'`
+  DISK_TOTAL=`echo $DISK_INFO | awk '{print $1}'`
+  DISK_USED=`echo $DISK_INFO | awk '{print $2}'`
+  DISK_AVAL=`echo $DISK_INFO | awk '{print $3}'`
+  echo $dusg
+  print_line "Size" $DISK_TOTAL
+  print_line "Used" $DISK_USED
+  print_line "Avaliable" $DISK_AVAL
+}
+
+main() {
+  echo $topl
+  disk_usage
+  echo $bott
+}
+
+main
