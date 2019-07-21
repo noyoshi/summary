@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# NOTE: these are the mac implementations - might need to be different for Linux
+# support
+
 topl='+-------System Summary---------+'
 dusg='+----------Disk Info-----------+'
+meml='+---------Memory Info----------+'
 line='--------------------------'
 bott='+------------------------------+'
 
@@ -21,9 +25,29 @@ disk_usage() {
   print_line "Avaliable" $DISK_AVAL
 }
 
+mem_usage() {
+  MEM_INFO=`top -l 1 -s 0 | grep "PhysMem" | awk '{print $2,$6}'`
+  MEM_USED=`echo $MEM_INFO | awk '{print $1}'`
+  MEM_FREE=`echo $MEM_INFO | awk '{print $2}'`
+  echo $meml
+  print_line "Used" $MEM_USED
+  print_line "Free" $MEM_FREE
+}
+
+docker_info() {
+  # TODO add docker imlementaion
+  echo "Docker not supported"
+}
+
+tmux_info() {
+  # TODO add tmux implementation
+  echo "Tmux not supported"
+}
+
 main() {
   echo $topl
   disk_usage
+  mem_usage
   echo $bott
 }
 
