@@ -44,8 +44,14 @@ tmux_info() {
   echo "Tmux not supported"
 }
 
+uptime_info() {
+  UPTIME=`w | tail -n1 | awk '{print $5}'`
+  print_line "Uptime" $UPTIME
+}
+
 main() {
   echo $topl
+  uptime_info
   disk_usage
   mem_usage
   echo $bott
