@@ -9,16 +9,24 @@ meml='+---------Memory Info----------+'
 line='--------------------------'
 bott='+------------------------------+'
 
+HOST_NAME=`uname`
+
+
 print_line() {
   let "val = ${#1} + ${#2}"
   printf "| \e[1;36m%s\e[m %s \e[1;36m%s\e[m |\n" $1 ${line:$val} $2
 }
 
 disk_usage() {
-  DISK_INFO=`df -h | head -n2 | tail -n1 | awk '{print $2,$3,$4}'`
-  DISK_TOTAL=`echo $DISK_INFO | awk '{print $1}'`
-  DISK_USED=`echo $DISK_INFO | awk '{print $2}'`
-  DISK_AVAL=`echo $DISK_INFO | awk '{print $3}'`
+  if [ $HOST_NAME = 'Darwin' ]; then
+    DISK_INFO=`df -h | head -n2 | tail -n1 | awk '{print $2,$3,$4}'`
+    DISK_TOTAL=`echo $DISK_INFO | awk '{print $1}'`
+    DISK_USED=`echo $DISK_INFO | awk '{print $2}'`
+    DISK_AVAL=`echo $DISK_INFO | awk '{print $3}'`
+  else
+    echo "disk_usage not supported for Linux"
+  fi
+
   echo $dusg
   print_line "Size" $DISK_TOTAL
   print_line "Used" $DISK_USED
@@ -26,6 +34,7 @@ disk_usage() {
 }
 
 mem_usage() {
+  # For some reason top takes a bit to run, find a faster way?
   MEM_INFO=`top -l 1 -s 0 | grep "PhysMem" | awk '{print $2,$6}'`
   MEM_USED=`echo $MEM_INFO | awk '{print $1}'`
   MEM_FREE=`echo $MEM_INFO | awk '{print $2}'`
