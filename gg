@@ -3,6 +3,12 @@
 # NOTE: these are the mac implementations - might need to be different for Linux
 # support
 
+# if you want to contribute a new stat, or update an existing one, use the
+# print_line function, which takes two arguments - the name of the thing you
+# want to print (Disk Size, etc) and the value (10GB, etc)
+# make sure that the new function is being called in main(), and you should be
+# all set!
+
 topl='+-------System Summary---------+'
 dusg='+----------Disk Info-----------+'
 meml='+---------Memory Info----------+'
@@ -34,26 +40,33 @@ disk_usage() {
 }
 
 mem_usage() {
-  # For some reason top takes a bit to run, find a faster way?
-  MEM_INFO=`top -l 1 -s 0 | grep "PhysMem" | awk '{print $2,$6}'`
-  MEM_USED=`echo $MEM_INFO | awk '{print $1}'`
-  MEM_FREE=`echo $MEM_INFO | awk '{print $2}'`
-  echo $meml
-  print_line "Used" $MEM_USED
-  print_line "Free" $MEM_FREE
+  if [ $HOST_NAME = 'Darwin' ]; then
+    # For some reason top takes a bit to run, find a faster way?
+    MEM_INFO=`top -l 1 -s 0 | grep "PhysMem" | awk '{print $2,$6}'`
+    MEM_USED=`echo $MEM_INFO | awk '{print $1}'`
+    MEM_FREE=`echo $MEM_INFO | awk '{print $2}'`
+    echo $meml
+    print_line "Used" $MEM_USED
+    print_line "Free" $MEM_FREE
+  else
+    # TODO get the memory usaged in Linux
+    echo "mem_usage not supported for linux"
+  fi
 }
 
 docker_info() {
-  # TODO add docker imlementaion
+  # TODO add docker imlementaion 🐳
   echo "Docker not supported"
 }
 
 tmux_info() {
   # TODO add tmux implementation
+  # add 1. the list of tmux sessions running
   echo "Tmux not supported"
 }
 
 uptime_info() {
+  # TODO make sure this works for both Mac and Linux
   UPTIME=`w | tail -n1 | awk '{print $5}'`
   print_line "Uptime" $UPTIME
 }
