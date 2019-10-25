@@ -9,6 +9,9 @@
 # make sure that the new function is being called in main(), and you should be
 # all set!
 
+# TO DELETE THE \r CREATED IN WINDOWS RUN THE COMMAND BELOW IN LINUX
+# sed -i 's/\r//' <name of bash file>
+
 topl='+-------System Summary---------+'
 dusg='+----------Disk Info-----------+'
 meml='+---------Memory Info----------+'
@@ -30,7 +33,10 @@ disk_usage() {
     DISK_USED=`echo $DISK_INFO | awk '{print $2}'`
     DISK_AVAL=`echo $DISK_INFO | awk '{print $3}'`
   else
-    echo "disk_usage not supported for Linux"
+    DISK_INFO=$(df -h | head -n2 | tail -n1 | awk '{print $2,$3,$4}')
+    DISK_TOTAL=$(echo $DISK_INFO | awk '{print $1}')
+    DISK_USED=$(echo $DISK_INFO | awk '{print $2}')
+    DISK_AVAL=$(echo $DISK_INFO | awk '{print $3}')
   fi
 
   echo $dusg
@@ -45,13 +51,13 @@ mem_usage() {
     MEM_INFO=`top -l 1 -s 0 | grep "PhysMem" | awk '{print $2,$6}'`
     MEM_USED=`echo $MEM_INFO | awk '{print $1}'`
     MEM_FREE=`echo $MEM_INFO | awk '{print $2}'`
-    echo $meml
-    print_line "Used" $MEM_USED
-    print_line "Free" $MEM_FREE
   else
-    # TODO get the memory usaged in Linux
-    echo "mem_usage not supported for linux"
+    MEM_USED=$(free | awk 'FNR == 2 {print $3}')
+    MEM_FREE=$(free | awk 'FNR == 2 {print $4}')
   fi
+  echo $meml
+  print_line "Used" $MEM_USED
+  print_line "Free" $MEM_FREE
 }
 
 docker_info() {
@@ -66,8 +72,11 @@ tmux_info() {
 }
 
 uptime_info() {
-  # TODO make sure this works for both Mac and Linux
-  UPTIME=`w | tail -n1 | awk '{print $5}'`
+  if [ $HOST_NAME = 'Darwin' ]; then
+    UPTIME=`w | tail -n1 | awk '{print $5}'`
+  else
+    UPTIME=$(w | tail -n1 | awk '{print $5}')
+  fi
   print_line "Uptime" $UPTIME
 }
 
